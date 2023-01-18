@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+</head>
+<body style="margin: 0; background-color: #dedbb4;">
+	<div id="map" style="background-image: url('sea.png');background-repeat: no-repeat;width:930px;height:557px">
+		<div id="coords" style="position: absolute; margin: 10px"></div>
+	</div>
+	<script>
+		var boats = [
+			'W051425 S125108',
+			'W035215 S130129',
+			'W034209 S132318',
+			'W040547 S135602',
+			'W031215 S134933',
+			'W024047 S131046',
+			'W034259 S123059',
+			'W040357 S121035',
+			'W045031 S114851',
+			'W043732 S105718',
+			'W050356 S105600',
+			'W051553 S095836',
+			'W045851 S095233',
+			'W045154 S101010',
+			'W043828 S095104',
+			'W043557 S093853',
+			'W045039 S093910',
+			'W050612 S093930',
+			'W050258 S092528',
+			'W052453 S093008',
+			'W050305 S091059',
+			'W043712 S090706',
+		]
+		var origX = 46000
+		var origY = 8400
+		var step = 81.5
+		function mousemove(event){
+			let offsetX = event.x * step
+			let offsetY = event.y * step
+			let currentX = origX - offsetX
+			let currentY = origY + offsetY
+			let hoursX = Math.abs(parseInt(currentX / 3600))
+			let minutesX = Math.abs(parseInt(parseInt(currentX % 3600) / 60))
+			let secondsX = Math.abs(parseInt(currentX % 60))
+			let hoursY = Math.abs(parseInt(currentY / 3600))
+			let minutesY = Math.abs(parseInt(parseInt(currentY % 3600) / 60))
+			let secondsY = Math.abs(parseInt(currentY % 60))
+			document.getElementById('coords').innerHTML = `${currentX > 0 ? 'W' : 'E'} ${hoursX} ${minutesX} ${secondsX}<br>${currentY > 0 ? 'S' : 'N'} ${hoursY} ${minutesY} ${secondsY}`
+		}
+		document.getElementById('map').addEventListener('mousemove', mousemove)
+		for(let boat of boats){
+			let coords = boat.split(' ')
+			let hoursX = parseInt(coords[0][1]+coords[0][2])
+			let minutesX = parseInt(coords[0][3]+coords[0][4])
+			let secondsX = parseInt(coords[0][5]+coords[0][6])
+			let hoursY = parseInt(coords[1][1]+coords[1][2])
+			let minutesY = parseInt(coords[1][3]+coords[1][4])
+			let secondsY = parseInt(coords[1][1]+coords[1][2])
+			let currentX = coords[0][0] === 'W' ? origX - (hoursX*3600+minutesX*60+secondsX) : origX + (hoursX*3600+minutesX*60+secondsX)
+			let currentY = (hoursY*3600+minutesY*60+secondsY) - origY
+			let offsetX = currentX / step
+			let offsetY = currentY / step
+			let elem = document.createElement('div')
+			elem.style.position = 'absolute'
+			elem.style.left = `${offsetX-2.5}px`
+			elem.style.top = `${offsetY-2.5}px`
+			elem.style.width = '5px'
+			elem.style.height = '5px'
+			elem.style.borderRadius = '50%'
+			elem.style.backgroundColor = 'blue'
+			elem.style.zIndex = '10'
+			document.getElementById('map').appendChild(elem)
+		}
+	</script>
+</body>
+</html>
