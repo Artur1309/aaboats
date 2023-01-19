@@ -99,9 +99,53 @@
 			'W044706 S122128',
 			'W043228 S112023',
 		]
+		var state = new Set()
 		var origX = 46000
 		var origY = 8400
 		var step = 81.5
+		function getCookie(name) {
+  			let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+  			return matches ? decodeURIComponent(matches[1]) : undefined;
+		}
+		function setCookie(name, value, options = {}) {
+
+  			options = {
+    				path: '/',
+    				...options
+  			};
+
+  			if (options.expires instanceof Date) {
+    				options.expires = options.expires.toUTCString();
+  			}
+
+  			let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+  			for (let optionKey in options) {
+    				updatedCookie += "; " + optionKey;
+    				let optionValue = options[optionKey];
+    				if (optionValue !== true) {
+      					updatedCookie += "=" + optionValue;
+    				}
+  			}
+			
+  			document.cookie = updatedCookie;
+		}
+		function saveState(){
+			let temp = []
+			for(let s of state){
+				temp.push(s)
+			}
+			setCookie('aaboats', temp.join(','))
+		}
+		function loadState(){
+			let temp = getCookie('aaboats')
+			if(temp) {
+				state = new Set(temp.split(','))
+				for(let s of state){
+					document.getElementById(s).style.backgroundColor = 'green'
+				}
+			}
+		}
 		function mousemove(event){
 			event.stopPropagation()
 			event.preventDefault()
@@ -130,14 +174,18 @@
 			event.stopPropagation()
 			event.preventDefault()
 			this.style.backgroundColor = 'green'
+			state.add(this.id)
+			saveState()
 		}
 		function contextmenu (){
 			event.stopPropagation()
 			event.preventDefault()
 			this.style.backgroundColor = 'blue'
+			state.remove(this.id)
+			loadState()
 		}
-		for(let boat of boats){
-			let coords = boat.split(' ')
+		for(let i = 0; i < boats.length; i++){
+			let coords = boats[i].split(' ')
 			let hoursX = parseInt(coords[0][1]+coords[0][2])
 			let minutesX = parseInt(coords[0][3]+coords[0][4])
 			let secondsX = parseInt(coords[0][5]+coords[0][6])
@@ -157,6 +205,7 @@
 			elem.style.borderRadius = '50%'
 			elem.style.backgroundColor = 'blue'
 			elem.style.zIndex = '10'
+			elem.id = i
 			elem.classList.add("marker")
 			elem.addEventListener('mousedown', mousedown)
 			elem.addEventListener('contextmenu', contextmenu)
@@ -166,7 +215,7 @@
 		}
 		document.getElementById('map').addEventListener('mousemove', mousemove)
 		
-		
+		loadState()
 		let map = document.getElementById('map')
 		map.style.left = `${(document.body.clientWidth - map.clientWidth)/2}px`
 		map.style.top = `${(document.body.clientHeight - map.clientHeight)/2}px`
