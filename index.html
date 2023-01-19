@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
 </head>
 <body style="margin: 0; background-color: #dedbb4; height: 100vh; width: 100vw">
 	<div id="map" style="background-image: url('sea.png');background-repeat: no-repeat;width:930px;height:557px;position:absolute">
-		<div id="coords" style="position: absolute; margin: 10px"></div>
+		<div id="coords" style="position: absolute;z-index: 20;background-color: #dedbb4;padding:2px 5px;border-radius: 3px; width: 100px"></div>
 	</div>
 	<script>
 		var boats = [
@@ -98,9 +97,13 @@
 		function mousemove(event){
 			event.stopPropagation()
 			event.preventDefault()
+			let coordsEl = document.getElementById('coords')
+			
 			if(event.target.classList.contains("marker")){
 				document.getElementById('coords').innerHTML = event.target.coords
 			} else {
+				coordsEl.style.left = `${event.offsetX + 15}px`
+				coordsEl.style.top = `${event.offsetY + 15}px`
 				let offsetX = event.offsetX * step
 				let offsetY = event.offsetY * step
 				let currentX = origX - offsetX
@@ -111,11 +114,20 @@
 				let hoursY = Math.abs(parseInt(currentY / 3600))
 				let minutesY = Math.abs(parseInt(parseInt(currentY % 3600) / 60))
 				let secondsY = Math.abs(parseInt(currentY % 60))
-				document.getElementById('coords').innerHTML = `${currentX > 0 ? 'W' : 'E'} ${hoursX}° ${minutesX}' ${secondsX}"<br>${currentY > 0 ? 'S' : 'N'} ${hoursY}° ${minutesY}' ${secondsY}"`
+				coordsEl.innerHTML = `${currentX > 0 ? 'W' : 'E'} ${hoursX}° ${minutesX}' ${secondsX}"<br>${currentY > 0 ? 'S' : 'N'} ${hoursY}° ${minutesY}' ${secondsY}"`
 			}
 			
 		}
-
+		function mousedown (){
+			event.stopPropagation()
+			event.preventDefault()
+			this.style.backgroundColor = 'green'
+		}
+		function contextmenu (){
+			event.stopPropagation()
+			event.preventDefault()
+			this.style.backgroundColor = 'blue'
+		}
 		for(let boat of boats){
 			let coords = boat.split(' ')
 			let hoursX = parseInt(coords[0][1]+coords[0][2])
@@ -138,6 +150,8 @@
 			elem.style.backgroundColor = 'blue'
 			elem.style.zIndex = '10'
 			elem.classList.add("marker")
+			elem.addEventListener('mousedown', mousedown)
+			elem.addEventListener('contextmenu', contextmenu)
 			elem.coords = `${coords[0][0]} ${hoursX}° ${minutesX}' ${secondsX}"<br>${coords[1][0]} ${hoursY}° ${minutesY}' ${secondsY}"`
 			document.getElementById('map').appendChild(elem)
 
@@ -153,5 +167,6 @@
 			map.style.left = `${(document.body.clientWidth - map.clientWidth)/2}px`
 			map.style.top = `${(document.body.clientHeight - map.clientHeight)/2}px`
 		}
+	</script>
 </body>
 </html>
