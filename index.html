@@ -131,6 +131,13 @@
 			
   			document.cookie = updatedCookie;
 		}
+		function resetState(){
+			for(let i = 0; i < boats.length; i++){
+				document.getElementById(i).style.backgroundColor = 'blue'
+			}
+			state = new Set()
+			saveState()
+		}
 		function saveState(){
 			let temp = []
 			for(let s of state){
