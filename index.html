@@ -96,19 +96,26 @@
 		var origY = 8400
 		var step = 81.5
 		function mousemove(event){
-			let offsetX = event.x * step
-			let offsetY = event.y * step
-			let currentX = origX - offsetX
-			let currentY = origY + offsetY
-			let hoursX = Math.abs(parseInt(currentX / 3600))
-			let minutesX = Math.abs(parseInt(parseInt(currentX % 3600) / 60))
-			let secondsX = Math.abs(parseInt(currentX % 60))
-			let hoursY = Math.abs(parseInt(currentY / 3600))
-			let minutesY = Math.abs(parseInt(parseInt(currentY % 3600) / 60))
-			let secondsY = Math.abs(parseInt(currentY % 60))
-			document.getElementById('coords').innerHTML = `${currentX > 0 ? 'W' : 'E'} ${hoursX} ${minutesX} ${secondsX}<br>${currentY > 0 ? 'S' : 'N'} ${hoursY} ${minutesY} ${secondsY}`
+			event.stopPropagation()
+			event.preventDefault()
+			if(event.target.classList.contains("marker")){
+				document.getElementById('coords').innerHTML = event.target.coords
+			} else {
+				let offsetX = event.offsetX * step
+				let offsetY = event.offsetY * step
+				let currentX = origX - offsetX
+				let currentY = origY + offsetY
+				let hoursX = Math.abs(parseInt(currentX / 3600))
+				let minutesX = Math.abs(parseInt(parseInt(currentX % 3600) / 60))
+				let secondsX = Math.abs(parseInt(currentX % 60))
+				let hoursY = Math.abs(parseInt(currentY / 3600))
+				let minutesY = Math.abs(parseInt(parseInt(currentY % 3600) / 60))
+				let secondsY = Math.abs(parseInt(currentY % 60))
+				document.getElementById('coords').innerHTML = `${currentX > 0 ? 'W' : 'E'} ${hoursX}° ${minutesX}' ${secondsX}"<br>${currentY > 0 ? 'S' : 'N'} ${hoursY}° ${minutesY}' ${secondsY}"`
+			}
+			
 		}
-		document.getElementById('map').addEventListener('mousemove', mousemove)
+
 		for(let boat of boats){
 			let coords = boat.split(' ')
 			let hoursX = parseInt(coords[0][1]+coords[0][2])
@@ -123,15 +130,28 @@
 			let offsetY = currentY / step
 			let elem = document.createElement('div')
 			elem.style.position = 'absolute'
-			elem.style.left = `${offsetX-2.5}px`
-			elem.style.top = `${offsetY-2.5}px`
-			elem.style.width = '5px'
-			elem.style.height = '5px'
+			elem.style.left = `${offsetX-4}px`
+			elem.style.top = `${offsetY-4}px`
+			elem.style.width = '8px'
+			elem.style.height = '8px'
 			elem.style.borderRadius = '50%'
 			elem.style.backgroundColor = 'blue'
 			elem.style.zIndex = '10'
+			elem.classList.add("marker")
+			elem.coords = `${coords[0][0]} ${hoursX}° ${minutesX}' ${secondsX}"<br>${coords[1][0]} ${hoursY}° ${minutesY}' ${secondsY}"`
 			document.getElementById('map').appendChild(elem)
+
 		}
-	</script>
+		document.getElementById('map').addEventListener('mousemove', mousemove)
+		
+		
+		let map = document.getElementById('map')
+		map.style.left = `${(document.body.clientWidth - map.clientWidth)/2}px`
+		map.style.top = `${(document.body.clientHeight - map.clientHeight)/2}px`
+		document.body.onresize = function(){
+			let map = document.getElementById('map')
+			map.style.left = `${(document.body.clientWidth - map.clientWidth)/2}px`
+			map.style.top = `${(document.body.clientHeight - map.clientHeight)/2}px`
+		}
 </body>
 </html>
