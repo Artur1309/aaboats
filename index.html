@@ -181,7 +181,7 @@
 			event.stopPropagation()
 			event.preventDefault()
 			this.style.backgroundColor = 'blue'
-			state.remove(this.id)
+			state.delete(this.id)
 			loadState()
 		}
 		for(let i = 0; i < boats.length; i++){
