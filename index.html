@@ -183,7 +183,7 @@
 			event.preventDefault()
 			this.style.backgroundColor = 'blue'
 			state.delete(this.id)
-			loadState()
+			saveState()
 		}
 		for(let i = 0; i < boats.length; i++){
 			let coords = boats[i].split(' ')
